@@ -1,56 +1,50 @@
-#include <bits/stdc++.h>
-using namespace std;
-const int N=1e5+10;
-int size[N];
-int parent[N];
-void make(int v)
-{
-	parent[v]=v;
-	size[v]=1;
-}
-int find(int v)
-{
-	if(v==parent[v]) return v;
-	return parent[v]=find(parent[v]);
+class DisjointSet {
+    
+public:
+    vector<int> rank, parent, size;  
+    DisjointSet(int n) {
+        rank.resize(n+1, 0); 
+        parent.resize(n+1);
+        size.resize(n+1); 
+        for(int i = 0;i<=n;i++) {
+            parent[i] = i; 
+            size[i] = 1; 
+        }
+    }
 
-}
-void Union(int a,int b)
-{
-	a=find(a);
-	b=find(b);
-	if(a!=b)
-	{
-		if(size[a]<size[b])
-		{
-			swap(a,b);
-		}
-		parent[b]=a;
-		size[a]+=size[b];
-	}
-}
-int main() {
-	int n;
-	cin>>n;
-	int k;
-	vector<int> v[n];
-	cin>>k;
-	for(int i=1;i<=n;i++)
-	{
-		make(i);
-	}
-	for(int i=0;i<k;i++)
-	{
-		int x,y;
-		cin>>x>>y;
-		Union(x,y);
-	}
-	int c=0;
-	for(int i=1;i<=n;i++)
-	{
-		if(find(i)==i)
-		{
-			c++;
-		}
-	}
-	cout<<c<<endl;
-}
+    int findUPar(int node) {
+        if(node == parent[node])
+            return node; 
+        return parent[node] = findUPar(parent[node]); 
+    }
+
+    void unionByRank(int u, int v) {
+        int ulp_u = findUPar(u); 
+        int ulp_v = findUPar(v); 
+        if(ulp_u == ulp_v) return; 
+        if(rank[ulp_u] < rank[ulp_v]) {
+            parent[ulp_u] = ulp_v; 
+        }
+        else if(rank[ulp_v] < rank[ulp_u]) {
+            parent[ulp_v] = ulp_u; 
+        }
+        else {
+            parent[ulp_v] = ulp_u; 
+            rank[ulp_u]++; 
+        }
+    }
+
+    void unionBySize(int u, int v) {
+        int ulp_u = findUPar(u); 
+        int ulp_v = findUPar(v); 
+        if(ulp_u == ulp_v) return; 
+        if(size[ulp_u] < size[ulp_v]) {
+            parent[ulp_u] = ulp_v; 
+            size[ulp_v] += size[ulp_u]; 
+        }
+        else {
+            parent[ulp_v] = ulp_u;
+            size[ulp_u] += size[ulp_v]; 
+        }
+    }
+}; 
